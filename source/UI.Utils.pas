@@ -183,16 +183,19 @@ type
 
     procedure Add(const Key: THashType; const Value: Number); overload;
     procedure Add(const Key: THashType; const Value: Double); overload;
+    procedure Add(const Key: THashType; const Value: Int64); overload;
     procedure Add(const Key: THashType; const Value: Pointer); overload;
     procedure Add(const Key: THashType; const Value: TObject); overload;
 
     procedure AddOrUpdate(const Key: THashType; const Value: Number); overload;
     procedure AddOrUpdate(const Key: THashType; const Value: Double); overload;
+    procedure AddOrUpdate(const Key: THashType; const Value: Int64); overload;
     procedure AddOrUpdate(const Key: THashType; const Value: Pointer); overload;
     procedure AddOrUpdate(const Key: THashType; const Value: TObject); overload;
 
     function Modify(const Key: THashType; const Value: Number): Boolean; overload;
     function Modify(const Key: THashType; const Value: Double): Boolean; overload;
+    function Modify(const Key: THashType; const Value: Int64): Boolean; overload;
     function Modify(const Key: THashType; const Value: Pointer): Boolean; overload;
     function Modify(const Key: THashType; const Value: TObject): Boolean; overload;
 
@@ -200,6 +203,7 @@ type
     function TryGetValue(const Key: THashType; out Data: Pointer): Boolean; overload;
     function TryGetValue(const Key: THashType; out Data: Int64): Boolean; overload;
     function TryGetValue(const Key: THashType; out Data: Double): Boolean; overload;
+    function TryGetValue(const Key: THashType; out Data: Number): Boolean; overload;
 
     function ValueOf(const Key: THashType; const DefaultValue: Number = -1): Number;
 
@@ -1012,6 +1016,19 @@ begin
   Inc(FCount);
 end;
 
+procedure TIntHash.Add(const Key: THashType; const Value: Int64);
+var
+  Hash: Integer;
+  Bucket: PIntHashItem;
+begin
+  Hash := Key mod Cardinal(Length(Buckets));
+  New(Bucket);
+  Bucket^.Key := Key;
+  Bucket^.AsInt64 := Value;
+  Bucket^.Next := Buckets[Hash];
+  Buckets[Hash] := Bucket;
+  Inc(FCount);
+end;
 
 procedure TIntHash.Add(const Key: THashType; const Value: Pointer);
 var
@@ -1054,6 +1071,12 @@ begin
 end;
 
 procedure TIntHash.AddOrUpdate(const Key: THashType; const  Value: Number);
+begin
+  if not Modify(Key, Value) then
+    Add(Key, Value);
+end;
+
+procedure TIntHash.AddOrUpdate(const Key: THashType; const Value: Int64);
 begin
   if not Modify(Key, Value) then
     Add(Key, Value);
@@ -1306,6 +1329,21 @@ begin
     Result := False;
 end;
 
+function TIntHash.Modify(const Key: THashType; const Value: Number): Boolean;
+var
+  P: PIntHashItem;
+begin
+  P := Find(Key)^;
+  if P <> nil then
+  begin
+    Result := True;
+    if Assigned(FOnFreeItem) then
+      FOnFreeItem(P);
+    P^.AsNumber := Value;
+  end else
+    Result := False;
+end;
+
 function TIntHash.Remove(const Key: THashType): Boolean;
 var
   P: PIntHashItem;
@@ -1378,6 +1416,20 @@ begin
   if P <> nil then begin
     Result := True;
     Data := P^.AsDouble
+  end else begin
+    Result := False;
+    Data := 0;
+  end;
+end;
+
+function TIntHash.TryGetValue(const Key: THashType; out Data: Int64): Boolean;
+var
+  P: PIntHashItem;
+begin
+  P := Find(Key)^;
+  if P <> nil then begin
+    Result := True;
+    Data := P^.AsInt64
   end else begin
     Result := False;
     Data := 0;
