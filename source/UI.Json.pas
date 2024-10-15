@@ -40,8 +40,6 @@ type
     function TryGetFloat(const Key: string; var Value: Double): Boolean; overload;
     function TryGetFloat(const Key: string; var Value: Single): Boolean; overload;
     function TryGetInt(const Key: string; var Value: Integer): Boolean; overload;
-    function TryGetInt(const Key: string; var Value: Int64): Boolean; overload;
-    function TryGetInt(const Key: string; var Value: NativeInt): Boolean; overload;
     function TryGetInt(const Key: string; var Value: Cardinal): Boolean; overload;
     function TryGetString(const Key: string; var Value: string): Boolean;
     function TryGetDateTime(const Key: string; var Value: TDateTime): Boolean;
@@ -296,34 +294,8 @@ begin
     Result := False;
 end;
 
-function TJSONObjectHelper.TryGetInt(const Key: string;
-  var Value: NativeInt): Boolean;
-var
-  V: TJSONValue;
-begin
-  V := GetValue(Key);
-  if Assigned(V) then begin
-    Result := True;
-    Value := V.GetValue<NativeInt>()
-  end else
-    Result := False;
-end;
 
-function TJSONObjectHelper.TryGetInt(const Key: string;
-  var Value: Int64): Boolean;
-var
-  V: TJSONValue;
-begin
-  V := GetValue(Key);
-  if Assigned(V) then begin
-    Result := True;
-    Value := V.GetValue<Int64>()
-  end else
-    Result := False;
-end;
-
-function TJSONObjectHelper.TryGetInt(const Key: string;
-  var Value: Integer): Boolean;
+function TJSONObjectHelper.TryGetInt(const Key: string; var Value: Integer): Boolean;
 var
   V: TJSONValue;
 begin

@@ -65,7 +65,6 @@ type
     function Put(const Key: string; const Value: Cardinal): TFrameStateData; overload; inline;
     function Put(const Key: string; const Value: Int64): TFrameStateData; overload; inline;
     function Put(const Key: string; const Value: Double): TFrameStateData; overload; inline;
-    function Put(const Key: string; const Value: NativeUInt): TFrameStateData; overload; inline;
     function Put(const Key: string; const Value: Boolean): TFrameStateData; overload; inline;
     function PutDateTime(const Key: string; const Value: TDateTime): TFrameStateData; inline;
   end;
@@ -86,7 +85,6 @@ type
     function Put(const Key: string; const Value: Cardinal): TFrameParams; overload;
     function Put(const Key: string; const Value: Int64): TFrameParams; overload;
     function Put(const Key: string; const Value: Double): TFrameParams; overload;
-    function Put(const Key: string; const Value: NativeUInt): TFrameParams; overload;
     function Put(const Key: string; const Value: Boolean): TFrameParams; overload;
     function PutDateTime(const Key: string; const Value: TDateTime): TFrameParams;
   end;
@@ -136,7 +134,6 @@ type
     procedure Put(const Key: string; const Value: Cardinal); overload;
     procedure Put(const Key: string; const Value: Int64); overload;
     procedure Put(const Key: string; const Value: Double); overload;
-    procedure Put(const Key: string; const Value: NativeUInt); overload;
     procedure Put(const Key: string; const Value: Boolean); overload;
     procedure PutDateTime(const Key: string; const Value: TDateTime);
 
@@ -2356,13 +2353,6 @@ begin
   FLocker.Leave;
 end;
 
-procedure TFrameState.Put(const Key: string; const Value: NativeUInt);
-begin
-  FLocker.Enter;
-  FData.Put(Key, Value);
-  FLocker.Leave;
-end;
-
 procedure TFrameState.Put(const Key: string; const Value: Boolean);
 begin
   FLocker.Enter;
@@ -2583,12 +2573,6 @@ begin
   AddOrSetValue(Key, GetDataValue(fdt_String, Value));
 end;
 
-function TFrameStateDataHelper.Put(const Key: string; const Value: NativeUInt): TFrameStateData;
-begin
-  Result := Self;
-  AddOrSetValue(Key, GetDataValue(fdt_Number, Value));
-end;
-
 function TFrameStateDataHelper.Put(const Key: string; const Value: Boolean): TFrameStateData;
 begin
   Result := Self;
@@ -2708,12 +2692,6 @@ begin
 end;
 
 function TFrameParamsHelper.Put(const Key: string; const Value: Cardinal): TFrameParams;
-begin
-  Result := Self;
-  AddOrSetValue(Key, Value);
-end;
-
-function TFrameParamsHelper.Put(const Key: string; const Value: NativeUInt): TFrameParams;
 begin
   Result := Self;
   AddOrSetValue(Key, Value);
